@@ -22,20 +22,11 @@ function Cache(){
 	var self = this;
 
 	/*
-	*Call it just once. Return null on old browsers. Size in bytes
-	*/
-	self.initDB =function(dbName, version, size){
-		if(!self.isDBSupported())
-			return null;
-		openDatabase(dbName, version, dbName, size);
-	}
-
-	/*
 	*try/catch tip to check if localstorage is supported by browser
 	*/
-	self.isDBSupported = function(){
+	self.isLocalStorageSupported = function(){
 		try {
-			return 'localStorage' in window && window['localStorage'] !== null;
+			return window.localStorage;
 		} catch (e) {
 			return false;
 		}
@@ -45,7 +36,10 @@ function Cache(){
 	*Get an item from cache. Remove it and return null if cache has expired.
 	*/
 	self.getItem = function (key){
-
+		if(!self.isLocalStorageSupported()) //If not supported, we rely on cookies
+		{
+			return null;
+		}
 		if(localStorage.getItem(key+"cache")){
 			var cacheTime = parseInt(localStorage.getItem(key+"cache"));
 			if(cacheTime < self.getTS()){
@@ -65,6 +59,10 @@ function Cache(){
 	*Set an item within cache. cacheTime in seconds
 	*/
 	self.setItem = function (key, value, cacheTime){
+		if(!self.isLocalStorageSupported()) //If not supported, we rely on cookies
+		{
+			return null;
+		}
 		var TSEndCache = parseInt(cacheTime)+self.getTS();
 		localStorage.setItem(key, value);
 		localStorage.setItem(key+"cache", TSEndCache);
