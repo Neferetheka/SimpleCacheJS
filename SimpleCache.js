@@ -69,6 +69,18 @@ function Cache(){
 	}
 	
 	/*
+	*Remove an item from the local cache
+	*/
+	self.removeItem = function(key){
+		if(!self.isLocalStorageSupported()) //If not supported, we rely on cookies
+		{
+			return null;
+		}
+		localStorage.removeItem(key);
+		localStorage.removeItem(key+"cache");
+	}
+	
+	/*
 	* function to get the UNIX Timestamp. Permits to manage cache expiration
 	*/
 	self.getTS = function(){
